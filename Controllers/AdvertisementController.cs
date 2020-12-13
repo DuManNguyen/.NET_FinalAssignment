@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
@@ -27,22 +26,28 @@ namespace Lab4.Controllers
 
         public async Task<IActionResult> Index(string ID)
         {
-
-            List<Advertisement> Adlist = await _context.Advertisements
-                            .Where(c => c.CommunityID == ID)
-                            .OrderBy(c => c.AdvertisementId)
-                            .AsNoTracking()
-                            .ToListAsync();
-            var viewModel = new AdvertisementViewModel
+            if (ID is null)
             {
-                Community = _context.Communities.Where(x => x.ID == ID).Single(),
-                Advertisements = Adlist
-            };
+                throw new System.ArgumentNullException(nameof(ID));
+            }
+
+            var viewModel = new AdvertisementViewModel();
+            viewModel.Community = _context.Communities.Where(a => a.ID == ID).Single();
+            System.Collections.Generic.List<Advertisement> Adlist = await _context.Advertisements
+                              .Where(c => c.CommunityID == ID).OrderBy(c => c.AdvertisementId).AsNoTracking().ToListAsync();
+            viewModel.Advertisements = Adlist;
             return View(viewModel);
+
+
         }
         [HttpGet]
-        public IActionResult Upload(string? ID)
+        public IActionResult Upload(string ID)
         {
+            if (ID is null)
+            {
+                throw new System.ArgumentNullException(nameof(ID));
+            }
+
             ViewData["CommunityID"] = ID;
             return View();
         }
@@ -51,60 +56,60 @@ namespace Lab4.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upload(IFormFile file, string ID)
         {
-            if(file == null)
+            if (file != null)
             {
-                var routeValue = new { id = ID };
-                return base.RedirectToAction("Index", routeValue);
-            }
-            BlobContainerClient containerClient;
-            // Create the container and return a container client object
-            try
-            {
-                containerClient = await _blobServiceClient.CreateBlobContainerAsync(containerName);
-                containerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.BlobContainer);
-            }
-            catch (RequestFailedException)
-            {
-                containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-            }
-
-
-            try
-            {
-                // create the blob to hold the data
-                var blockBlob = containerClient.GetBlobClient(file.FileName);
-                if (await blockBlob.ExistsAsync())
+                BlobContainerClient containerClient;
+                // Create the container and return a container client object
+                try
                 {
-                    await blockBlob.DeleteAsync();
+                    containerClient = await _blobServiceClient.CreateBlobContainerAsync(containerName);
+                    containerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.BlobContainer);
+                }
+                catch (RequestFailedException)
+                {
+                    containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
                 }
 
-                using (var memoryStream = new MemoryStream())
+
+                try
                 {
-                    // copy the file data into memory
-                    await file.CopyToAsync(memoryStream);
+                    // create the blob to hold the data
+                    var blockBlob = containerClient.GetBlobClient(file.FileName);
+                    if (await blockBlob.ExistsAsync())
+                    {
+                        await blockBlob.DeleteAsync();
+                    }
 
-                    // navigate back to the beginning of the memory stream
-                    memoryStream.Position = 0;
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        // copy the file data into memory
+                        await file.CopyToAsync(memoryStream);
 
-                    // send the file to the cloud
-                    await blockBlob.UploadAsync(memoryStream);
-                    memoryStream.Close();
+                        // navigate back to the beginning of the memory stream
+                        memoryStream.Position = 0;
+
+                        // send the file to the cloud
+                        await blockBlob.UploadAsync(memoryStream);
+                        memoryStream.Close();
+                    }
+
+                    // add the photo to the database if it uploaded successfully
+                    var image = new Advertisement();
+                    image.CommunityID = ID;
+                    image.Url = blockBlob.Uri.AbsoluteUri;
+                    image.FileName = file.FileName;
+
+                    _context.Advertisements.Add(image);
+                    _context.SaveChanges();
+                }
+                catch (RequestFailedException)
+                {
+                    View("Error");
                 }
 
-                // add the photo to the database if it uploaded successfully
-                var image = new Advertisement();
-                image.CommunityID = ID;
-                image.Url = blockBlob.Uri.AbsoluteUri;
-                image.FileName = file.FileName;
-
-                _context.Advertisements.Add(image);
-                _context.SaveChanges();
+                var imageroute = new { id = ID };
+                return base.RedirectToAction("Index", imageroute);
             }
-            catch (RequestFailedException)
-            {
-                View("Error");
-            }
-
             var route = new { id = ID };
             return base.RedirectToAction("Index", route);
         }
@@ -112,21 +117,17 @@ namespace Lab4.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (id is null)
             {
-                return NotFound();
+                //  return NotFound();
+                throw new System.ArgumentNullException(nameof(id));
             }
 
             var image = await _context.Advertisements
                 .FirstOrDefaultAsync(m => m.AdvertisementId == id);
-            if (image == null)
-            {
-                return NotFound();
-            }
+            return image is null ? NotFound() : (IActionResult)View(image);
 
-            return View(image);
         }
-
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, string CommunityID)
@@ -147,25 +148,30 @@ namespace Lab4.Controllers
 
             try
             {
+                int numofAds = _context.Advertisements.Where(a => a.Url == image.Url).Count();
+
+
                 // Get the blob that holds the data
                 var blockBlob = containerClient.GetBlobClient(image.FileName);
                 if (await blockBlob.ExistsAsync())
                 {
-                    await blockBlob.DeleteAsync();
+                    if (numofAds == 1)
+                        await blockBlob.DeleteAsync();
                 }
 
                 _context.Advertisements.Remove(image);
                 await _context.SaveChangesAsync();
-
             }
             catch (RequestFailedException)
             {
                 return View("Error");
             }
 
-            var route = new { id = CommunityID };
-            return base.RedirectToAction("Index", route);
+            var deleteroute = new { id = CommunityID };
+            return base.RedirectToAction("Index", deleteroute);
         }
 
     }
 }
+
+
