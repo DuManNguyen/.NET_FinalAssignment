@@ -1,0 +1,77 @@
+﻿@model Lab4.Models.ViewModel.CommunityViewModel
+
+@{
+    ViewData["Title"] = "Index";
+
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => Model.Communities.ElementAt(0).Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => Model.Communities.ElementAt(0).Budget)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Communities)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Budget)
+                </td>
+                <td>
+                    <a asp-action="Index" asp-route-id="@item.ID">Select</a> |
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-controller="Advertisement" asp-action="Index" asp-route-id="@item.ID">Ads</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>
+
+@if (Model.CommunityMemberships != null)
+{
+    <h2>Members of the community</h2>
+    @if (Model.CommunityMemberships.Count() > 0)
+    {
+        <table>
+            <tr>
+                <td>
+                    <strong>Name</strong>
+                </td>
+            </tr>
+            @foreach (var item in Model.CommunityMemberships)
+            {
+                <tr>
+                    <td>
+                        @{
+
+                            var a = item.Student.FullName;
+                        }
+                        <p>@a</p>
+                    </td>
+                </tr>
+             }
+        </table>
+      }else {
+         <p><strong>No membership record exist</strong></p>
+      }
+ }
+
+

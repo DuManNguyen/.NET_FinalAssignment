@@ -1,0 +1,40 @@
+﻿@model Lab4.Models.ViewModels.StudentMembershipViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<div>
+    <h4>Student</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Full Name
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Student.FullName);
+        </dd>
+    </dl>
+    <hr />
+    <table>
+        @foreach (var com in Model.Memberships)
+        {
+            var registerORNot = com.IsMember ? "Unregister" : "Register";
+            <tr>
+                <td>
+                    @Html.DisplayFor(item => com.Title)
+                </td>
+                <td>
+                    <a asp-controller="Student" asp-action="EditMemberships" asp-route-id=@Model.Student.ID asp-route-communityID=@com.CommunityId>@registerORNot</a>
+                </td>
+            </tr>
+        }
+    </table>
+    <hr />
+
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

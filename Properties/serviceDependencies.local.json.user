@@ -1,0 +1,30 @@
+{
+  "dependencies": {
+    "secrets1": {
+      "restored": true,
+      "restoreTime": "2020-10-25T08:20:27.6347774Z"
+    },
+    "mssql1": {
+      "restored": true,
+      "restoreTime": "2020-10-25T08:18:59.5567298Z"
+    }
+  },
+  "parameters": {
+    "mssql1.resourceGroupLocation": {
+      "Type": "location",
+      "Value": "canadacentral"
+    },
+    "mssql1.subscriptionId": {
+      "Type": "subscription",
+      "Value": "29071062-7f7e-43f6-8b29-3e777f007f1b"
+    },
+    "mssql1.resourceGroupName": {
+      "Type": "resourceGroup",
+      "Value": "yijunac"
+    },
+    "subscriptionId": {
+      "Type": "subscription",
+      "Value": "29071062-7f7e-43f6-8b29-3e777f007f1b"
+    }
+  }
+}

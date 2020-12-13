@@ -1,0 +1,52 @@
+﻿
+@model Lab4.Models.ViewModels.AdvertisementViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<h1>Show ads for community  @Model.Community.Title </h1>
+<p>
+    <a asp-action="Upload" asp-route-id="@Model.Community.ID">Upload new</a>
+</p>
+<div>
+    <a asp-action="Index" asp-controller="Community">Back to List</a>
+</div>
+
+@if (Model.Advertisements.Count() == 0)
+{
+    <p>There are no files to display.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Advertisements.ElementAt(0).FileName)
+                </th>
+                <th>
+                    Image
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Advertisements)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FileName)
+                    </td>
+                    <td>
+                        <img src="@item.Url" style="max-width: 400px;" />
+                    </td>
+                    <td>
+                        <a asp-action="Delete" asp-route-id="@item.AdvertisementId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,83 @@
+﻿@model Lab4.Models.ViewModels.StudentViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                LastName
+            </th>
+            <th>
+                FirstName
+            </th>
+            <th>
+                EnrollmentDate
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Students)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EnrollmentDate)
+                </td>
+                <td>
+                    <a asp-action="Index" asp-route-id="@item.ID">Select</a> |
+                    <a asp-action="EditMemberships" asp-route-id="@item.ID">Edit Memberships</a> |
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.CommunityMemberships != null)
+{
+    <h2>Member of the following communities</h2>
+    <hr />
+    @if (Model.CommunityMemberships.Count() > 0)
+    {
+        <table>
+            <tr>
+                <td>
+                    <strong>Name</strong>
+                </td>
+            </tr>
+
+            @foreach (var item in Model.CommunityMemberships)
+            {
+                <tr>
+                    <td>
+                        @{
+
+                            var a = item.Community.Title;
+                        }
+                        <p>@a</p>
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <p><strong>No membership record exist</strong></p>
+    }
+}

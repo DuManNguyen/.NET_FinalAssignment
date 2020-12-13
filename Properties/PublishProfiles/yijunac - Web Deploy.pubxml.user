@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAZ9Z/93GSLU2MEtR7EAKxDgAAAAACAAAAAAAQZgAAAAEAACAAAAC6Bo/sODPsfzsDYbH29Ot8bM2PZYKpG/gFXmGjGcaRpwAAAAAOgAAAAAIAACAAAADD6lAQVlx0RBdkn3STnhSoVTSgRrKOvWWTk2XuakZUFIAAAAC7JWnAAEFrZg6Ugmuo9g33hvHVBooehFPnfruqVFIJmk/QDxQ+TSNRufgJzcyKYFLfEZBVrwIFKdjAoYYixWWyMNYMIqbsolsoBJfuNCW5kztwPha2JR44S4k6qoO2s5rdPW13CAo6U2JUdAHb9LMkXV8HuIeMO5jg5mEdOnGXpUAAAACv8PZy4ti+s6s8Pm7UpCO6H2VSIWBMr27p6REZUUbNkStMYdYiR4VUhVRAO6jZF/NxBhhjCZc7ASZmXGxGy1Et</EncryptedPassword>
+  </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="DefaultConnection">
+      <Value>Data Source=tcp:yijunacserver.database.windows.net,1433%3bInitial Catalog=yijunac%3bUser Id=yijunacadmin%40yijunacserver%3bPassword=Molly199368</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
+  <ItemGroup>
+    <EFMigrations Include="Lab4.Data.SchoolCommunityContext">
+      <Value>Data Source=tcp:yijunacserver.database.windows.net,1433%3bInitial Catalog=yijunac%3bUser Id=yijunacadmin%40yijunacserver%3bPassword=Molly199368</Value>
+    </EFMigrations>
+  </ItemGroup>
+</Project>
